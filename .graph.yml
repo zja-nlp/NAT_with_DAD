@@ -1,0 +1,95 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  annotations:
+    pipelines.kubeflow.org/kfp_sdk_version: 1.4.0
+    pipelines.kubeflow.org/pipeline_compilation_time: '2022-01-04T16:13:31.946519'
+    pipelines.kubeflow.org/pipeline_spec: '{"description": "The GLAT-main pipeline
+      is generated automatically by silkflow.", "name": "GLAT-main"}'
+  generateName: glat-main-
+  labels:
+    NB_USER: zhanjiaao.zja
+    pipelines.kubeflow.org/kfp_sdk_version: 1.4.0
+spec:
+  arguments:
+    parameters: []
+  dnsPolicy: ClusterFirstWithHostNet
+  entrypoint: glat-main
+  hostNetwork: true
+  podPriorityClassName: normal-priority
+  serviceAccountName: pipeline-runner
+  templates:
+  - dag:
+      tasks:
+      - name: glat-main-20220104-16-13-30-6118
+        template: glat-main-20220104-16-13-30-6118
+    name: glat-main
+  - affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: resource-group.bach.io/silkflow
+              operator: Exists
+    container:
+      args:
+      - -c
+      - 'echo "run PipelineTemplate/GLAT-main-20220104-16_13_30 ...
+
+        " && echo ''{{workflow.name}}'' > /step-name.txt && chmod +x /mnt/nas/users/zhanjiaao.zja/workspace/gitlab.alibaba-inc.com/zhanjiaao.zja/my-code/GLAT-main/silkflow_detail/meta/PipelineTemplate/GLAT-main-20220104-16_13_30/run.sh
+        && /mnt/nas/users/zhanjiaao.zja/workspace/gitlab.alibaba-inc.com/zhanjiaao.zja/my-code/GLAT-main/silkflow_detail/meta/PipelineTemplate/GLAT-main-20220104-16_13_30/run.sh'
+      command:
+      - sh
+      env:
+      - name: NB_UID
+        value: '1363683'
+      - name: NB_USER
+        value: zhanjiaao.zja
+      - name: SF_PROXY_USER
+        value: zhanjiaao.zja
+      - name: SF_TASK_PATH
+        value: /mnt/nas/users/zhanjiaao.zja/workspace/gitlab.alibaba-inc.com/zhanjiaao.zja/my-code/GLAT-main/silkflow_detail/meta/PipelineTemplate/GLAT-main-20220104-16_13_30
+      - name: SF_POD_NAME
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.name
+      image: reg.docker.alibaba-inc.com/silkflow/pytorch:1.6.0-cuda10.1-cudnn7-runtime-fairseq
+      resources:
+        limits:
+          cpu: '5'
+          memory: 32G
+          nvidia.com/gpu: '4'
+        requests:
+          cpu: '5'
+          memory: 32G
+      volumeMounts:
+      - mountPath: /mnt/nas
+        name: glat-main-20220104-16-13-30-6118
+      - mountPath: /etc/pod-info
+        name: pod-info
+        readOnly: true
+    metadata:
+      labels:
+        NB_USER: zhanjiaao.zja
+        NUM_GPU: '4'
+    name: glat-main-20220104-16-13-30-6118
+    tolerations:
+    - effect: NoSchedule
+      key: sigma.ali/resource-pool
+      value: mit_bach
+    - effect: NoSchedule
+      key: sigma.ali/is-ecs
+      operator: Exists
+    volumes:
+    - name: glat-main-20220104-16-13-30-6118
+      persistentVolumeClaim:
+        claimName: silkflow-pvc
+    - downwardAPI:
+        items:
+        - fieldRef:
+            fieldPath: metadata.labels
+          path: labels
+        - fieldRef:
+            fieldPath: metadata.annotations
+          path: annotations
+      name: pod-info
